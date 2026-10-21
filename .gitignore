@@ -1,0 +1,154 @@
+# ============================================================
+# AI Models Browser — .gitignore
+# ============================================================
+
+# ---------- .NET / C# ----------
+# Сборочные выходы
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+arm64/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+*.csproj.user
+
+# Публикация / артефакты сборки
+publish/
+artifacts/
+*.publishsettings
+*.pubxml
+*.pubxml.user
+*.nupkg
+*.snupkg
+*.apk
+*.aab
+*.ipa
+*.app
+*.binlog
+*.msbuild
+*.map
+
+# ---------- Visual Studio / Rider / VS Code ----------
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+.roslyn.analyzer/
+*.DotSettings.user
+
+# ---------- NuGet ----------
+packages/
+!packages/build/
+.nuget/
+project.lock.json
+project.fragment.lock.json
+*.nuget.props
+*.nuget.targets
+
+# ---------- Результаты тестов и покрытия ----------
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.coverage
+*.coveragexml
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverlet.*
+
+# ---------- Логи и временные файлы приложения ----------
+*.log
+logs/
+log/
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+error.log
+AIModelsBrowser_*.log
+
+# Настройки пользователя (содержат провайдера/тему, не коммитим)
+settings.json
+appsettings.Local.json
+appsettings.*.Local.json
+*.user.settings
+
+# ---------- Node (используется только для проверок i18n) ----------
+node_modules/
+.npm/
+.yarn/
+.yarn/cache
+.yarn/install-state.gz
+.pnpm-store/
+.pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npmrc
+.npmrc.local
+.yarnrc
+.eslintcache
+.cache/
+
+# ---------- Python (вспомогательные скрипты разработки) ----------
+# Скрипты в tools/ — служебные, в репозиторий не нужны.
+tools/
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---------- Временные файлы приложения ----------
+# Превью-страницы, которые создаются во время разработки.
+wwwroot/_*.html
+wwwroot/_preview*.html
+wwwroot/_logo_preview.html
+WebView2/
+*.cache
+
+# ---------- ОС / редакторы ----------
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.stackdump
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fuse_hidden*
+.directory
+
+# ---------- Секреты и ключи ----------
+*.pfx
+*.pfx.cer
+*.p12
+*.key
+*.pem
+secrets.json
+secrets.*.json
+.env
+.env.*
+!.env.example
+*.local.json
+AGENTS.md

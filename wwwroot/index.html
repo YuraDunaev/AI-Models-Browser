@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI providers and models</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  
+  <div id="view-main" class="view">
+    
+    <header class="app-header">
+      <div class="header-left">
+        
+        <div class="logo-wrap"><img class="logo" src="__LOGO_DATA_URI__" width="192" height="192" alt=""><span class="logo-text">DUNA</span></div>
+      </div>
+
+      
+      <div class="search-bar">
+        <div class="provider-info" id="providerInfo">
+          <span class="pill provider" id="pillProvider">—</span>
+          <span class="pill model" id="pillModel">—</span>
+          <span class="pill tokens" id="pillTokens">—</span>
+          <span class="pill in" id="pillIn">0</span>
+          <span class="pill out" id="pillOut">0</span>
+          
+          <div class="row-actions" id="rowActions" hidden>
+            <button class="icon-btn" data-row-act="copy" data-i18n-title="table.copyTitle" title="Copy ID">📋</button>
+            <button class="icon-btn" data-row-act="info" data-i18n-title="table.infoTitle" title="Information">ℹ</button>
+            <button class="icon-btn" data-row-act="open" data-i18n-title="table.openTitle" title="Open page">↗</button>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn" id="btnReload" data-i18n-title="btn.reload" title="Reload">⟳</button>
+          <div class="export-menu">
+            <button class="icon-btn" id="btnExport" data-i18n-title="btn.export" title="Export">⤓</button>
+            <div class="export-drop">
+              <button class="export-item" id="btnExportJson" data-i18n="btn.export">Export JSON</button>
+              <button class="export-item" id="btnExportCsvBtn" data-i18n="btn.copyCsv">Export CSV</button>
+              <button class="export-item" id="btnExportFavBtn" data-i18n="btn.exportFav">Export favorites</button>
+            </div>
+          </div>
+          <button class="icon-btn" id="btnViewMode" data-i18n-title="btn.viewMode" title="Change view">▦</button>
+          <button class="icon-btn cmp-btn" id="btnCompare" data-i18n-title="cmp.open" title="Compare" hidden>⇄ <span id="cmpCount">0</span></button>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button class="icon-btn icon-btn-lg" id="btnSettings" data-i18n-title="settings.title" title="Settings">⚙</button>
+      </div>
+    </header>
+
+    
+    <div class="main-body">
+      
+      <aside class="filter-panel">
+        <div class="fp-section">
+          <div class="fp-title" data-i18n="filter.provider">Provider</div>
+          <select id="providerSelect" class="provider-select full" data-i18n-title="filter.provider" title="Provider"></select>
+        </div>
+
+        <div class="fp-section">
+          <div class="fp-title" data-i18n="filter.search">Search</div>
+          <div class="fp-search-row">
+            <input type="text" id="modelSearch" data-i18n-placeholder="filter.searchPlaceholder" placeholder="Filter models…" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="fp-section">
+          <div class="fp-title" data-i18n="filter.modelType">Model type</div>
+          <button class="chip chip-block" id="chipFav">★ <span data-i18n="filter.fav">Favorites</span></button>
+          <button class="chip chip-block" id="chipFree">free</button>
+          <button class="chip chip-block" id="chipOnePerFamily" data-i18n-title="filter.onePerFamilyTitle" title="One model per family">
+            <span data-i18n="filter.onePerFamily">One per family</span>
+          </button>
+        </div>
+
+        <div class="fp-section">
+          <div class="fp-title" data-i18n="filter.modality">Input modality</div>
+          <select id="modalitySelect" class="provider-select full"></select>
+        </div>
+
+        <div class="fp-section">
+          <div class="fp-title" data-i18n="filter.outputModality">Output modality</div>
+          <select id="outputModalitySelect" class="provider-select full"></select>
+        </div>
+
+        <div class="fp-section">
+          <div class="fp-title" data-i18n="filter.context">Context above, thousand tokens</div>
+          <input type="number" id="ctxMin" class="fp-input" value="0" min="0" step="1" />
+        </div>
+
+        <div class="fp-section">
+          <div class="fp-title" data-i18n="filter.price">Price not above, $ / 1M tokens</div>
+          <input type="number" id="priceMax" class="fp-input" value="100" min="0" step="0.01" />
+        </div>
+
+        <button class="btn-secondary fp-reset" id="btnResetFilters" data-i18n="btn.resetFilters">Reset filters</button>
+
+        <div class="fp-count">
+          <span data-i18n="filter.found">Found</span>: <span id="chipCountVal">0</span> <span data-i18n="filter.of">of</span> <span id="chipTotalVal">0</span>
+        </div>
+      </aside>
+
+      
+      <div class="content-col">
+        
+        <div class="table-wrap" id="tableWrap">
+      <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"><span></span><span></span><span></span><span></span></div>
+        <div class="loading-text" data-i18n="loading">Loading models…</div>
+      </div>
+      <table class="models-table">
+        
+        <thead></thead>
+        <tbody id="modelsBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" hidden>
+        <div class="empty-title" data-i18n="table.empty">Nothing found</div>
+        <button class="btn-secondary" id="btnEmptyReset" data-i18n="btn.resetFilters">Reset filters</button>
+      </div>
+        </div>
+
+      
+      <div class="cards-view" id="cardsView" hidden>
+        
+        <div class="cards-toolbar">
+          <span class="cards-toolbar-label" data-i18n="btn.sort">Sort</span>
+          <div class="cards-sort" id="cardsSort" role="group"></div>
+          <button class="icon-btn cards-sort-dir" id="cardsSortDir"
+                  data-i18n-title="btn.sortDir" title="Change sort direction">▲</button>
+        </div>
+        <div class="cards-grid" id="cardsGrid"></div>
+      </div>
+
+      </div>
+    </div>
+
+    
+    <footer class="app-footer">
+      <div class="footer-left">
+        AI Models Browser v1.0 · C# + WebView2
+        <span class="footer-sep">·</span>
+        <span id="footerUpdated"></span>
+        <span class="footer-sep">·</span>
+        <span id="footerRating"></span>
+        <span class="footer-sep">·</span>
+        <span data-i18n="key.hotkeys" data-i18n-title="key.hotkeysTitle" title="Keyboard shortcuts"></span>
+      </div>
+      <div class="footer-right">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="footerStatus" data-i18n="footer.ready">Ready</span>
+      </div>
+    </footer>
+  </div>
+
+  
+  <div id="view-settings" class="view view-hidden">
+    <div class="logo-wrap logo-settings" aria-hidden="true"><img class="logo" src="__LOGO_DATA_URI__" width="192" height="192" alt=""><span class="logo-text">DUNA</span></div>
+    <header class="app-header app-header-glass">
+      <div class="header-left">
+        <button class="icon-btn" id="btnBack" data-i18n-title="btn.back" title="Back">←</button>
+        <div class="title" data-i18n="settings.title">Settings</div>
+      </div>
+    </header>
+
+    <div class="settings-scroll">
+      <section class="settings-card">
+        <div class="settings-row">
+          <div class="settings-label">
+            <div class="settings-title" data-i18n="settings.theme">Appearance theme</div>
+            <div class="settings-desc" data-i18n="settings.themeDesc">Light or dark interface theme</div>
+          </div>
+          <button class="toggle" id="themeToggle" role="switch" aria-checked="false" data-i18n-aria-label="settings.dark" aria-label="Dark theme">
+            <span class="toggle-track">
+              <span class="toggle-thumb"><span class="toggle-icon sun">☀</span><span class="toggle-icon moon">☾</span></span>
+            </span>
+            <span class="toggle-labels"><span class="lbl-light" data-i18n="settings.light">Light</span><span class="lbl-dark" data-i18n="settings.dark">Dark</span></span>
+          </button>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-label">
+            <div class="settings-title" data-i18n="settings.uiFont">Interface font size</div>
+            <div class="settings-desc" data-i18n="settings.uiFontDesc">Headings, buttons, input fields</div>
+          </div>
+          <div class="stepper">
+            <button class="step-btn" id="fontMinus" data-i18n-title="btn.smaller" title="Smaller">−</button>
+            <span class="step-value" id="fontValue">13 px</span>
+            <button class="step-btn" id="fontPlus" data-i18n-title="btn.larger" title="Larger">+</button>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-label">
+            <div class="settings-title" data-i18n="settings.tableFont">Table font size</div>
+            <div class="settings-desc" data-i18n="settings.tableFontDesc">Text size in the model list</div>
+          </div>
+          <div class="stepper">
+            <button class="step-btn" id="tableFontMinus" data-i18n-title="btn.smaller" title="Smaller">−</button>
+            <span class="step-value" id="tableFontValue">13 px</span>
+            <button class="step-btn" id="tableFontPlus" data-i18n-title="btn.larger" title="Larger">+</button>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-label">
+            <div class="settings-title" data-i18n="settings.provider">Provider</div>
+            <div class="settings-desc" data-i18n="settings.providerDesc">Model list source</div>
+          </div>
+          <select id="settingsProviderSelect" class="provider-select wide"></select>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-label">
+            <div class="settings-title" data-i18n="settings.language">Language</div>
+            <div class="settings-desc" data-i18n="settings.languageDesc">Interface language</div>
+          </div>
+          <select id="languageSelect" class="provider-select wide"></select>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-label">
+            <div class="settings-title" data-i18n="settings.columns">Table columns</div>
+            <div class="settings-desc" data-i18n="settings.columnsDesc">Which columns to show in the model list</div>
+          </div>
+          <div class="columns-box" id="columnsBox">
+            <label class="columns-item"><input type="checkbox" data-col="context" checked /> <span data-i18n="table.context">Context</span></label>
+            <label class="columns-item"><input type="checkbox" data-col="input" checked /> <span data-i18n="table.input">Input</span></label>
+            <label class="columns-item"><input type="checkbox" data-col="output" checked /> <span data-i18n="table.output">Output</span></label>
+            <label class="columns-item"><input type="checkbox" data-col="created" checked /> <span data-i18n="table.created">Released</span></label>
+            <label class="columns-item"><input type="checkbox" data-col="rating" checked /> <span data-i18n="table.rating">Rating</span></label>
+          </div>
+        </div>
+
+        <div class="settings-row settings-row-hotkeys">
+          <div class="settings-label">
+            <div class="settings-title" data-i18n="settings.hotkeys">Keyboard shortcuts</div>
+            <div class="settings-desc" data-i18n="settings.hotkeysDesc">Hotkeys available in the model list</div>
+          </div>
+          <div class="hotkeys-list" id="hotkeysList"></div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-label">
+            <div class="settings-title" data-i18n="settings.autoRefresh">Auto refresh</div>
+            <div class="settings-desc" data-i18n="settings.autoRefreshDesc">Reload the model list periodically (minutes, 0 = off)</div>
+          </div>
+          <input type="number" id="autoRefreshInput" class="provider-select wide" min="0" step="1" value="0" />
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-label">
+            <div class="settings-title" data-i18n="settings.reset">Reset</div>
+            <div class="settings-desc" data-i18n="settings.resetDesc">Restore default values</div>
+          </div>
+          <button class="btn-secondary" id="btnReset" data-i18n="btn.reset">Reset</button>
+        </div>
+      </section>
+
+      <div class="settings-footer">
+        <button class="btn-primary" id="btnSaveSettings" data-i18n="btn.save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  
+
+  
+  <div class="modal-overlay" id="aboutModal" hidden>
+    <div class="modal glass-modal" role="dialog" aria-modal="true" aria-labelledby="aboutModalTitle">
+      <div class="modal-head">
+        <div class="modal-title" id="aboutModalTitle" data-i18n="about.title">About the app</div>
+        <button class="icon-btn" id="btnAboutClose" data-i18n-title="btn.close" title="Close">✕</button>
+      </div>
+      <div class="modal-body" id="aboutModalBody"></div>
+    </div>
+  </div>
+
+  
+  <div class="modal-overlay" id="infoModal" hidden>
+    <div class="modal glass-modal" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+      <div class="modal-head">
+        <div class="modal-title" id="infoModalTitle" data-i18n="info.model">Model</div>
+        <div class="modal-head-actions">
+          <button class="btn-secondary" id="btnOpenModel" data-i18n="btn.openPage">Open page</button>
+          <button class="icon-btn" id="btnInfoClose" data-i18n-title="btn.close" title="Close">✕</button>
+        </div>
+      </div>
+      <div class="modal-body" id="infoModalBody"></div>
+      <div class="modal-foot">
+        <div class="modal-tabs" id="snippetTabs">
+          <button class="chip tab active" data-lang="curl">cURL</button>
+          <button class="chip tab" data-lang="python">Python</button>
+          <button class="chip tab" data-lang="js">JavaScript</button>
+        </div>
+        <button class="btn-primary" id="btnCopySnippet" data-i18n="btn.copySnippet">Copy code</button>
+      </div>
+      <pre class="snippet-box" id="snippetBox"></pre>
+    </div>
+  </div>
+
+  
+  <div class="modal-overlay" id="compareModal" hidden>
+    <div class="modal glass-modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="compareModalTitle">
+      <div class="modal-head">
+        <div class="modal-title" id="compareModalTitle" data-i18n="cmp.title">Compare models</div>
+        <div class="modal-head-actions">
+          <span class="cmp-hint" data-i18n="cmp.hint">Tick models to compare (up to 3)</span>
+          <button class="btn-secondary" id="btnCompareClear" data-i18n="cmp.clear">Clear</button>
+          <button class="icon-btn" id="btnCompareClose" data-i18n-title="btn.close" title="Close">✕</button>
+        </div>
+      </div>
+      <div class="modal-body" id="compareModalBody"></div>
+    </div>
+  </div>
+
+</div>
+
+<!--APP_SCRIPTS-->
+</body>
+</html>

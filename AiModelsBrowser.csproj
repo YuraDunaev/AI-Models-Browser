@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- WebView2 использует COM interop, поэтому AOT/trimming отключены:
+         иначе publish падает с "PublishTrimmed is implied by native compilation". -->
+    <PublishAot>false</PublishAot>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <SelfContained>false</SelfContained>
+    <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <AssemblyName>AI Models Browser</AssemblyName>
+    <Product>AI Models Browser</Product>
+    <Copyright>© 2026 Duna</Copyright>
+    <PlatformTarget>x64</PlatformTarget>
+    <RootNamespace>AiModelsBrowser</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- WinForms/WPF API используются, поэтому указываем целевую версию Windows:
+         иначе появляется CA1416 на Dock, RowStyle, FormClosed и т.п. -->
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    <!-- MSB3277: WebView2 тянет WPF-сборку (WindowsBase 4.0) рядом с WinForms-сборкой
+         (WindowsBase 5.0). Приложение использует только WinForms — конфликт безопасен.
+         CA1416: проект одноплатформенный (net10.0-windows), WinForms API всегда доступны,
+         но анализатор .NET 10 не распознаёт SupportedOSPlatformVersion=7.0. -->
+    <NoWarn>$(NoWarn);MSB3277;CA1416</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3124.44" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Скрипт проверки словарей — только для разработки, в приложение не встраивается. -->
+    <EmbeddedResource Include="wwwroot\**\*" Exclude="wwwroot\*.check.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Папка tests — отдельный проект, её файлы не должны попадать в основной. -->
+    <Compile Remove="tests\**" />
+    <EmbeddedResource Remove="tests\**" />
+    <None Remove="tests\**" />
+  </ItemGroup>
+
+</Project>
